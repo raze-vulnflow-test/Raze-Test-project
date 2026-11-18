@@ -1,0 +1,18 @@
+{
+  "name": "raze-test-project",
+  "version": "1.0.0",
+  "description": "Order management API for the Raze test shop",
+  "main": "src/app.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "axios": "0.21.0",
+    "express": "4.16.0",
+    "jsonwebtoken": "8.5.0",
+    "lodash": "4.17.15",
+    "sql.js": "1.8.0"
+  }
+}
