@@ -18,6 +18,7 @@ The API listens on http://localhost:3000.
 |---|---|---|
 | POST | /api/auth/login | `{ "username": "admin", "password": "admin123" }` returns a token |
 | GET | /api/orders?customer=ayse | Orders, filtered (token needed) |
+| GET | /api/orders/search?q=lap | Orders whose customer or product contains the text (token needed) |
 | GET | /api/orders/:id | One order (token needed) |
 | GET | /api/files/invoice?name=sample.txt | Downloads an invoice (token needed) |
 | GET | /api/reports/pdf?order=3 | Order as PDF (token needed) |

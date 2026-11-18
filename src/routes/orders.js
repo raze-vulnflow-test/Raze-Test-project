@@ -12,6 +12,14 @@ router.get('/', async (req, res) => {
   res.json(rows(db.exec(sql)));
 });
 
+// GET /api/orders/search?q=lap  -> orders whose customer or product contains the text
+router.get('/search', async (req, res) => {
+  const db = await open();
+  const q = req.query.q || '';
+  const sql = "SELECT * FROM orders WHERE customer LIKE '%" + q + "%' OR product LIKE '%" + q + "%' ORDER BY id DESC";
+  res.json(rows(db.exec(sql)));
+});
+
 router.get('/:id', async (req, res) => {
   const db = await open();
   const stmt = db.prepare('SELECT * FROM orders WHERE id = ?');
