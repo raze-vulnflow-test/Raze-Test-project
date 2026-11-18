@@ -1,0 +1,26 @@
+# .github/workflows/vulnflow-devsecops.yml in each repository
+# VulnFlow DevSecOps with the organisation key: put the key once as the organisation secret
+# VULNFLOW_ORG_KEY (Organization settings > Secrets and variables > Actions, repository access
+# all or selected repositories). The job's OIDC token tells VulnFlow which repository calls,
+# so the workflow must be allowed to ask for it (id-token: write).
+name: VulnFlow DevSecOps
+on:
+  push:
+    branches: [main]   # the repository's default branch
+  pull_request:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  vulnflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: VulnFlow DevSecOps scan
+        env:
+          VULNFLOW_URL: https://demo.vulnflow.com
+          VULNFLOW_KEY: ${{ secrets.VULNFLOW_ORG_KEY }}
+          VULNFLOW_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          curl -fsS "$VULNFLOW_URL/api/dast/devsecops/pipeline/script" -o vulnflow-devsecops.sh
+          bash vulnflow-devsecops.sh
