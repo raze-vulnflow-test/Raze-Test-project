@@ -1,0 +1,37 @@
+# CI: VulnFlow DevSecOps on every push to main and every pull request.
+# A push to main deploys to staging only when the VulnFlow DevSecOps gate passes.
+# The organisation key is the organisation secret VULNFLOW_ORG_KEY; the job's OIDC token tells VulnFlow which repository calls.
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  vulnflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: VulnFlow DevSecOps scan
+        env:
+          VULNFLOW_URL: https://demo.vulnflow.com
+          VULNFLOW_KEY: ${{ secrets.VULNFLOW_ORG_KEY }}
+          VULNFLOW_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          curl -fsS "$VULNFLOW_URL/api/dast/devsecops/pipeline/script" -o vulnflow-devsecops.sh
+          bash vulnflow-devsecops.sh
+
+  deploy:
+    name: Deploy to staging
+    needs: vulnflow
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t raze-test-project:${GITHUB_SHA::7} .
+      - name: Deploy (simulated)
+        run: echo "Deployed raze-test-project:${GITHUB_SHA::7} to staging"
